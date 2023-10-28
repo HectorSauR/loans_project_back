@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Usuario;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
-class UpdateUsuarioRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,19 +23,19 @@ class UpdateUsuarioRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('usuario')['id'];
+        $userId = $this->route('user')['id'];
 
         return [
-            'usuario' => [
+            'user' => [
                 'sometimes',
                 'max:100',
-                Rule::unique('usuarios', 'usuario')->ignore($userId),
+                Rule::unique('users', 'user')->ignore($userId),
             ],
             'password' => 'sometimes|max:20',
-            'nombre' => 'sometimes',
+            'name' => 'sometimes',
             'email' => [
                 'sometimes',
-                Rule::unique('usuarios', 'email')->ignore($userId),
+                Rule::unique('users', 'email')->ignore($userId),
             ],
         ];
     }
