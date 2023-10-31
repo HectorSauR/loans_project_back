@@ -21,4 +21,39 @@ class Investor extends Model
     {
         return $this->hasMany(Invest::class);
     }
+
+    public function is_active(): bool
+    {
+        $active = false;
+
+        if (!is_null($this->engaged)) {
+            $active = true;
+        }
+
+        return $active;
+    }
+
+    public function getBalance()
+    {
+        return ($this->available ?? 0) + ($this->profit ?? 0);
+    }
+
+    public function delete()
+    {
+        if ($this->is_active()) {
+            throw new \Exception("No se puede eliminar un inversor que tiene préstamos activos");
+        }
+
+        $balance = $this->getBalance();
+
+        Invest::createNewInvest([
+            'total' => $balance,
+            'investor_id' => $this->id,
+            'kind' => 'out',
+            'detail' => "Invesor dado de baja"
+        ]);
+
+        $this->status = 0;
+        $this->save();
+    }
 }

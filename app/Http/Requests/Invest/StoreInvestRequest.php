@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Invest;
 
+use App\Rules\DecimalRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreInvestRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StoreInvestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,9 @@ class StoreInvestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'total' => ['required', new DecimalRule(10, 2)],
+            'details' => ['sometimes', 'string'],
+            'kind' => ['sometimes', Rule::in(['in', 'out'])]
         ];
     }
 }

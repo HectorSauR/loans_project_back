@@ -28,9 +28,11 @@ class InvestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invest $invest)
+    public function show(int $id)
     {
-        //
+        $invest = Invest::findOrFail($id);
+
+        return response()->json($invest, 200);
     }
 
     /**

@@ -20,7 +20,8 @@ class InvestorFactory extends Factory
         return [
             'name' => $this->faker->name,
             'available' => $this->faker->randomFloat(2, 1000, 5000),
-            'profits' => $this->faker->randomFloat(2, 0, 1000),
+            'engaged' => $this->faker->randomFloat(2, 1000, 5000),
+            'profit' => $this->faker->randomFloat(2, 0, 1000),
             'user_id' => function () {
                 return User::factory()->create()->id;
             },

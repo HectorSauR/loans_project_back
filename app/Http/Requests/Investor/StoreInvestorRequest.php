@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Investor;
 
+use App\Rules\DecimalRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreInvestorRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StoreInvestorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,16 @@ class StoreInvestorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:100', Rule::unique('investors', 'name')],
+            'available' => ['sometimes', new DecimalRule(10, 2)],
+            'userId' => ['required', 'integer', 'exists:users,id'],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id' => $this->userId,
+        ]);
     }
 }

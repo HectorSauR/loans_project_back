@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Investor;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class UpdateInvestorRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateInvestorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,11 @@ class UpdateInvestorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $investorId = $this->route('investor');
+        Log::info($investorId);
+
         return [
-            //
+            'name' => ['required', 'max:100', Rule::unique('investors', 'name')->ignore($investorId)],
         ];
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('investor_id');
             $table->foreign('investor_id')->references('id')->on('investors');
             $table->enum('kind', ['in', 'out'])->default('in');
+            $table->text('details')->nullable();
             $table->timestamps();
         });
     }
