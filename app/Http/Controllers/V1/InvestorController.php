@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Http\Controllers\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Invest\StoreInvestRequest;
+use App\Http\Requests\Investor\StoreInvestorRequest;
+use App\Http\Requests\Investor\UpdateInvestorRequest;
+use App\Models\Invest;
+use App\Models\Investor;
+
+class InvestorController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return response()->json(Investor::where('status', 1)->get(), 200);
+    }
+
+    public function getInvests($id)
+    {
+        $investor = Investor::findOrFail($id);
+
+        if (!$investor) {
+            return response()->json(['error' => 'Inversor no encontrado'], 404);
+        }
+
+        $investor['invests'] = $investor->invests;
+
+        return response()->json($investor, 200);
+    }
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreInvestorRequest $request)
+    {
+        $data = $request->all();
+
+        $available = $data['available'] ?? null;
+        unset($data['available']);
+
+        $investor = Investor::create($data);
+
+        if (!is_null($available)) {
+            Invest::createNewInvest([
+                'total' => $available,
+                'investor_id' => $investor->id,
+                'detail' => "Saldo inicial"
+            ]);
+        }
+
+        return response()->json($investor, 200);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(int $id)
+    {
+        $investor = Investor::findOrFail($id);
+
+        return response()->json($investor, 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateInvestorRequest $request, int $id)
+    {
+        $data = $request->all();
+        $investor = Investor::findOrFail($id);
+
+        $investor->update($data);
+
+        return response()->json($investor, 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(int $id)
+    {
+        $investor = Investor::findOrFail($id);
+
+        $investor->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function reactivateInvestor(int $id)
+    {
+        $investor = Investor::findOrFail($id);
+        $investor->status = 1;
+        $this->save();
+    }
+
+    public function addMovement(StoreInvestRequest $request, int $id)
+    {
+        $data = $request->all();
+
+        $data["investor_id"] = $id;
+
+        $invest = Invest::createNewInvest($data);
+
+        return response()->json($invest, 200);
+    }
+
+    public function updateMovement(StoreInvestRequest $request, int $investorId, int $movementId)
+    {
+        $data = $request->all();
+
+        $investor = Investor::findOrFail($investorId);
+
+        $movement = $investor->invests->where('id', $movementId)->first();
+
+        if (!$movement) {
+            throw new \Exception("No hay relación entre el movimiento y el inversor");
+        }
+
+        $movement->update($data);
+
+        return response()->json($movement, 200);
+    }
+}
