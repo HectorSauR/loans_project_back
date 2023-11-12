@@ -6,7 +6,6 @@ use App\Http\Controllers\V1\InvestController;
 use App\Http\Controllers\V1\InvestorController;
 use App\Http\Controllers\V1\LoanController;
 use App\Http\Controllers\V1\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
