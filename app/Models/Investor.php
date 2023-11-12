@@ -22,6 +22,11 @@ class Investor extends Model
         return $this->hasMany(Invest::class);
     }
 
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
+    }
+
     public function is_active(): bool
     {
         $active = false;
