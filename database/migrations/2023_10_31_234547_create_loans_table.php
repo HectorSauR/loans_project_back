@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('interest_generated', 10, 2)->nullable();
             $table->enum('deadline', ['week', 'month'])->default('month');
 
+            $table->datetime('estimated_end_date');
             $table->datetime('ended_date')->nullable();
             $table->text('guarantee')->nullable();
             $table->enum('kind', ['cash', 'card'])->default('cash');

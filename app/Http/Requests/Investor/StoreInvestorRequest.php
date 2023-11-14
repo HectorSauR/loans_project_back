@@ -25,8 +25,7 @@ class StoreInvestorRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:100', Rule::unique('investors', 'name')],
-            'available' => ['sometimes', new DecimalRule(10, 2)],
-            'userId' => ['required', 'integer', 'exists:users,id'],
+            'available' => ['sometimes', new DecimalRule(10, 2)]
         ];
     }
 

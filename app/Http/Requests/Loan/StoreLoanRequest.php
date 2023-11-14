@@ -23,14 +23,23 @@ class StoreLoanRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+
         return [
             'total' => ['required', new DecimalRule(10, 2)],
-            'interest' => ['required', new DecimalRule(10, 2)],
-            'deadline' => ['required', Rule::in(['week', 'month'])],
+            'interest' => ['sometimes', new DecimalRule(10, 2)],
+            'deadline' => ['sometimes', Rule::in(['week', 'month'])],
             'guarantee' => ['required'],
-            'kind' => ['required', Rule::in(['cash', 'card'])],
-            'investor_id' => ['required', 'exists:investors,id'],
-            'debtor_id' =>['required', 'exists:debtors,id']
+            'kind' => ['sometimes', Rule::in(['cash', 'card'])],
+            'investor_id' => [
+                'required',
+                Rule::exists('investors', 'id')->where('user_id', $user->id)
+            ],
+            'debtor_id' => [
+                'required',
+                Rule::exists('debtors', 'id')->where('user_id', $user->id)
+            ],
+            'estimated_end_date' => ['required', 'date']
         ];
     }
 }

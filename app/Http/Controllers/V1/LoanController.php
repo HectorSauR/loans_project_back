@@ -14,7 +14,8 @@ class LoanController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        return response()->json($user->loans, 200);
     }
 
     /**
@@ -22,23 +23,43 @@ class LoanController extends Controller
      */
     public function store(StoreLoanRequest $request)
     {
-        //
+        $data = $request->all();
+
+        $loan = Loan::createNewLoan($data, $request->user());
+
+        return response()->json($loan, 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Loan $loan)
+    public function show(int $id)
     {
-        //
+        $user = auth()->user();
+        $loan = $user->loans->where('id', $id)->first();
+
+        if (!$loan) {
+            return response()->json(["error" => "Not Found"], 404);
+        }
+
+        return response()->json($loan, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLoanRequest $request, Loan $loan)
+    public function update(UpdateLoanRequest $request, int $id)
     {
-        //
+        $user = auth()->user();
+        $loan = $user->loans->where('id', $id)->first();
+
+        if (!$loan) {
+            return response()->json(["error" => "Not Found"], 404);
+        }
+
+        $loan->update($request->all());
+
+        return response()->json($loan, 200);
     }
 
     /**

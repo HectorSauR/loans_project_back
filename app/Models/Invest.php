@@ -8,6 +8,7 @@ use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Type\Decimal;
 
@@ -110,5 +111,10 @@ class Invest extends Model
     {
         $oneWeekAgo = now()->subWeek();
         return $this->created_at <= $oneWeekAgo;
+    }
+
+    public function user()
+    {
+        return $this->investor->user;
     }
 }

@@ -13,9 +13,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        return response()->json(User::all(), 200);
+        return response()->json(auth()->user(), 200);
     }
 
     /**
@@ -25,21 +25,24 @@ class UserController extends Controller
     {
         $data = $request->all();
 
-        $User = User::create($data);
+        $user = User::create($data);
 
-        return response()->json($User, 200);
+        return response()->json($user, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $User)
+    public function update(UpdateUserRequest $request)
     {
+        $user = auth()->user();
+        $user = User::findOrFail($user->id);
+
         $data = $request->all();
 
-        $User->update($data);
+        $user->update($data);
 
-        return response()->json($User, 200);
+        return response()->json($user, 200);
     }
 
     /**

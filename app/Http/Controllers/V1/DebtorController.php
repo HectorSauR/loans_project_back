@@ -9,13 +9,14 @@ use App\Http\Requests\Loan\StoreLoanRequest;
 use App\Models\Debtor;
 use App\Models\Investor;
 use App\Models\Loan;
+use Illuminate\Http\Request;
 
 class DebtorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return response()->json(Debtor::all(), 200);
     }
@@ -25,8 +26,10 @@ class DebtorController extends Controller
      */
     public function store(StoreDebtorRequest $request)
     {
+        $user = $request->user();
+
         $data = $request->all();
-        $data["user_id"] = 1;
+        $data["user_id"] = $user->id;
 
         $loanData = $data["loan"];
         unset($data["loan"]);
@@ -34,7 +37,7 @@ class DebtorController extends Controller
         $debtor = Debtor::create($data);
 
         $loanData["debtor_id"] = $debtor->id;
-        $loan = Loan::createNewLoan($loanData);
+        $loan = Loan::createNewLoan($loanData, $user);
 
         $debtor->loan = $loan;
 
@@ -77,7 +80,7 @@ class DebtorController extends Controller
         $data = $request->all();
 
         $data["debtor_id"] = $id;
-        $loan = Loan::createNewLoan($data);
+        $loan = Loan::createNewLoan($data, $request->user());
 
         return response()->json($loan, 200);
     }

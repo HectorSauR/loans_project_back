@@ -39,6 +39,7 @@ class StoreDebtorRequest extends FormRequest
                 'required',
                 Rule::exists('investors', 'id')->where('user_id', 1)
             ],
+            'loan.estimated_end_date' => ['required', 'date']
         ];
     }
 }

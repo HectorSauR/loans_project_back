@@ -14,11 +14,8 @@ class Loan extends Model
 
     protected $fillable = [
         "total",
-        "remaining",
         "interest",
-        "interest_generated",
         "deadline",
-        "ended_date",
         "guarantee",
         "kind",
         "investor_id",
@@ -40,21 +37,27 @@ class Loan extends Model
         return !$this->ended_date;
     }
 
-    public static function createNewLoan(array $data): Loan
+    public static function createNewLoan(array $data, User $user): Loan
     {
         $debtor = Debtor::find($data["debtor_id"]);
 
-        //TODO: check more to start a new loan
-        foreach ($debtor->loans as $loan) {
-            if ($loan->isActive()) {
-                throw new \Exception(
-                    "No se puede crear una nueva deuda con una deuda activa"
-                );
-            }
+        $max_loans = $user->max_active_loans;
+
+        $active_loans = $debtor->loans->whereNull("ended_date")->count();
+
+        if ($active_loans >= $max_loans) {
+            throw new \Exception(
+                "Préstamos activos superados."
+            );
         }
 
         $loan = Loan::create($data);
 
         return $loan;
+    }
+
+    public function update(array $data = [], array $options = [])
+    {
+        
     }
 }
