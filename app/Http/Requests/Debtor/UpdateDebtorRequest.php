@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Debtor;
 
+use App\Rules\UniqueTogether;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDebtorRequest extends FormRequest
@@ -21,9 +22,16 @@ class UpdateDebtorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $debtorId = $this->route('debtor');
         return [
-            "name" => "sometimes|string|max:100",
-            "address" => "sometimes|string|max:150"
+            "name" => ["sometimes", "string", "max:100", new UniqueTogether(
+                'debtors',
+                ['name', 'user_id'],
+                'El nombre seleccionado ya fue tomado',
+                $debtorId
+            )],
+            "address" => "sometimes|string|max:150",
+            "max_active_loans" => "sometimes|integer"
         ];
     }
 }

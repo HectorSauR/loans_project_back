@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Investor;
 
 use App\Rules\DecimalRule;
+use App\Rules\UniqueTogether;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,11 @@ class StoreInvestorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:100', Rule::unique('investors', 'name')],
+            'name' => ['required', 'max:100', new UniqueTogether(
+                'investors',
+                ['name', 'user_id'],
+                'El nombre seleccionado ya fue tomado'
+            )],
             'available' => ['sometimes', new DecimalRule(10, 2)]
         ];
     }

@@ -22,6 +22,7 @@ class Debtor extends Model
     protected $fillable = [
         "name",
         "address",
+        "max_active_loans",
         "user_id"
     ];
 

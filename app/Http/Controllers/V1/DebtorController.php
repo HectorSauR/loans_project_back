@@ -9,6 +9,7 @@ use App\Http\Requests\Loan\StoreLoanRequest;
 use App\Models\Debtor;
 use App\Models\Investor;
 use App\Models\Loan;
+use Exception;
 use Illuminate\Http\Request;
 
 class DebtorController extends Controller
@@ -37,7 +38,16 @@ class DebtorController extends Controller
         $debtor = Debtor::create($data);
 
         $loanData["debtor_id"] = $debtor->id;
-        $loan = Loan::createNewLoan($loanData, $user);
+
+        try {
+            $loan = Loan::createNewLoan($loanData);
+        } catch (Exception $e) {
+            if (isset($debtor)) {
+                $debtor->delete();
+            }
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
 
         $debtor->loan = $loan;
 
@@ -80,7 +90,7 @@ class DebtorController extends Controller
         $data = $request->all();
 
         $data["debtor_id"] = $id;
-        $loan = Loan::createNewLoan($data, $request->user());
+        $loan = Loan::createNewLoan($data);
 
         return response()->json($loan, 200);
     }

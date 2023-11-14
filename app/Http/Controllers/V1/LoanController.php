@@ -25,7 +25,7 @@ class LoanController extends Controller
     {
         $data = $request->all();
 
-        $loan = Loan::createNewLoan($data, $request->user());
+        $loan = Loan::createNewLoan($data);
 
         return response()->json($loan, 200);
     }

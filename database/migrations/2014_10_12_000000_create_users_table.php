@@ -19,7 +19,6 @@ return new class extends Migration
             $table->char('email', '100')->unique();
             $table->decimal('available_balance', 12, 2)->nullable();
             $table->decimal('balance_receivable', 12, 2)->nullable();
-            $table->integer('max_active_loans')->default(1);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
             $table->rememberToken();

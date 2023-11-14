@@ -22,6 +22,7 @@ class LoanFactory extends Factory
             'interest' => 10.00,
             'interest_generated' => $this->faker->randomFloat(2, 0, 100),
             'deadline' => $this->faker->randomElement(['week', 'month']),
+            'estimated_end_date' => $this->faker->dateTimeBetween('now', '+1 year'),
             'ended_date' => $this->faker->dateTimeBetween('now', '+1 year'),
             'guarantee' => $this->faker->text,
             'kind' => $this->faker->randomElement(['cash', 'card']),

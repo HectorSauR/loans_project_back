@@ -57,6 +57,21 @@ class Investor extends Model
         return ($this->available ?? 0) + ($this->profit ?? 0);
     }
 
+    public function reduceBalance(float $amount): void
+    {
+        if ($this->available > $amount) {
+            $this->available -= $amount;
+            $this->save();
+            return;
+        }
+
+        $difference = abs($this->available - $amount);
+
+        $this->available = 0;
+        $this->profit -= $difference;
+        $this->save();
+    }
+
     public function delete()
     {
         if ($this->is_active()) {

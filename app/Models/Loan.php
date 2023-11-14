@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\InsuficientBalanceException;
+use App\Exceptions\UpdateNotAllowedException;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +21,8 @@ class Loan extends Model
         "guarantee",
         "kind",
         "investor_id",
-        "debtor_id"
+        "debtor_id",
+        "estimated_end_date"
     ];
 
     public function debtor(): BelongsTo
@@ -37,11 +40,11 @@ class Loan extends Model
         return !$this->ended_date;
     }
 
-    public static function createNewLoan(array $data, User $user): Loan
+    public static function createNewLoan(array $data): Loan
     {
         $debtor = Debtor::find($data["debtor_id"]);
 
-        $max_loans = $user->max_active_loans;
+        $max_loans = $debtor->max_active_loans;
 
         $active_loans = $debtor->loans->whereNull("ended_date")->count();
 
@@ -51,6 +54,18 @@ class Loan extends Model
             );
         }
 
+        $investor = Investor::find($data["investor_id"]);
+
+        $investorBalance = $investor->getBalance();
+
+        if (!($investorBalance >= $data["total"])) {
+            throw new InsuficientBalanceException(
+                "Insuficiente dinero disponible del inversor."
+            );
+        }
+
+        $investor->reduceBalance($data["total"]);
+
         $loan = Loan::create($data);
 
         return $loan;
@@ -58,6 +73,37 @@ class Loan extends Model
 
     public function update(array $data = [], array $options = [])
     {
-        
+
+        if ($this->isUpdateAllowedAfter24Hours()) {
+            throw new UpdateNotAllowedException("No se puede modificar el registro después de 24 horas.");
+        }
+
+        if (!array_key_exists("total", $data)) {
+            parent::update($data, $options);
+            return;
+        }
+
+        $investorBalance = $this->investor->getBalance();
+        $newTotal = (float)$data["total"];
+        $difference = abs($this->total -= $newTotal);
+
+        if ($this->total > $newTotal) {
+            $this->investor->available += $difference;
+        } else {
+            if ($difference > $investorBalance) {
+                throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.");
+            }
+
+            $this->investor->available -= $difference;
+            $this->investor->save();
+        }
+
+        parent::update($data, $options);
+    }
+
+    private function isUpdateAllowedAfter24Hours()
+    {
+        $oneDayAgo = now()->subDay();
+        return $this->created_at <= $oneDayAgo;
     }
 }
