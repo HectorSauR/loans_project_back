@@ -47,7 +47,7 @@ class UniqueTogether implements ValidationRule
             $query->where($this->excludeName, '!=', $this->excludeId);
         }
 
-        if(!($query->count() === 0)){
+        if(!($query->count() != 0)){
             $fail($this->message);
         }
     }
