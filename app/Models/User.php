@@ -23,7 +23,8 @@ class User extends Authenticatable
         'password',
         'username',
         'available_balance',
-        'balance_receivable'
+        'balance_receivable',
+        'max_active_loans'
     ];
 
     /**
@@ -45,4 +46,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function invests()
+    {
+        return $this->hasManyThrough(Invest::class, Investor::class);
+    }
+
+    public function loans()
+    {
+        return $this->hasManyThrough(Loan::class, Debtor::class);
+    }
+
 }

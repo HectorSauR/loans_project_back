@@ -14,7 +14,8 @@ class InvestController extends Controller
      */
     public function index()
     {
-        return response()->json(Invest::all(), 200);
+        $user = auth()->user();
+        return response()->json($user->invests, 200);
     }
 
     /**
@@ -30,7 +31,13 @@ class InvestController extends Controller
      */
     public function show(int $id)
     {
-        $invest = Invest::findOrFail($id);
+        $invest = Invest::where('id', $id)->whereHas('investor.user', function ($query) {
+            $query->where('id', auth()->user()->id);
+        })->get();
+
+        if (count($invest) == 0) {
+            response()->json(['error' => 'Not found'], 404);
+        }
 
         return response()->json($invest, 200);
     }

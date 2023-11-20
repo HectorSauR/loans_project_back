@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Investor;
+namespace App\Http\Requests\Debtor;
 
-use App\Rules\DecimalRule;
 use App\Rules\UniqueTogether;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreInvestorRequest extends FormRequest
+class UpdateDebtorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,20 +22,16 @@ class StoreInvestorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $debtorId = $this->route('debtor');
         return [
-            'name' => ['required', new UniqueTogether(
-                'investors',
+            "name" => ["sometimes", "string", "max:100", new UniqueTogether(
+                'debtors',
                 ['name', 'user_id'],
-                'El nombre seleccionado ya fue tomado'
+                'El nombre seleccionado ya fue tomado',
+                $debtorId
             )],
-            'available' => ['sometimes', new DecimalRule(10, 2)]
+            "address" => "sometimes|string|max:150",
+            "max_active_loans" => "sometimes|integer"
         ];
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'user_id' => $this->userId,
-        ]);
     }
 }

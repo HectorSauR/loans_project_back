@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\V1\DebtorController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\InvestController;
 use App\Http\Controllers\V1\InvestorController;
+use App\Http\Controllers\V1\LoanController;
 use App\Http\Controllers\V1\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,22 +22,27 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1'], function () {
     Route::post("login", [AuthController::class, "login"]);
     Route::post("signIn", [AuthController::class, "signIn"]);
-    
-    Route::group(['middleware' => ['auth:sanctum']], function(){
+
+    Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post("logout", [AuthController::class, "logout"]);
         Route::apiResource('user', UserController::class);
-    
+
         Route::group(['prefix' => 'investor'], function () {
             Route::get('{id}/invests', [InvestorController::class, 'getInvests'])->name('investor.invests');
             Route::post('{id}/reactivate', [InvestorController::class, 'reactivateInvestor'])->name('investor.reactivate');
             Route::post('{id}/movement', [InvestorController::class, 'addMovement'])->name('investor.addMovement');
             Route::put('{investor}/movement/{movement}', [InvestorController::class, 'updateMovement'])->name('investor.updateMovement');
         });
-    
+
         Route::apiResource('investor', InvestorController::class);
         Route::apiResource('invest', InvestController::class);
+
+        Route::apiResource('debtor', DebtorController::class);
+        Route::post('debtor/{id}/addLoan', [DebtorController::class, 'addLoan'])->name('debtor.addLoan');
+        Route::apiResource('loan', LoanController::class);
     });
 });
+
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();

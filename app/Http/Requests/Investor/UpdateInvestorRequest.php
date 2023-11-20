@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Investor;
 
+use App\Rules\UniqueTogether;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -24,10 +25,14 @@ class UpdateInvestorRequest extends FormRequest
     public function rules(): array
     {
         $investorId = $this->route('investor');
-        Log::info($investorId);
 
         return [
-            'name' => ['required', 'max:100', Rule::unique('investors', 'name')->ignore($investorId)],
+            'name' => ['required', 'max:100', new UniqueTogether(
+                'investors',
+                ['name', 'user_id'],
+                'El nombre seleccionado ya fue tomado',
+                $investorId
+            )],
         ];
     }
 }

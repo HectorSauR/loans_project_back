@@ -36,7 +36,10 @@ class InvestorController extends Controller
      */
     public function store(StoreInvestorRequest $request)
     {
+        $user = auth()->user();
         $data = $request->all();
+
+        $data['user_id'] = $user->id;
 
         $available = $data['available'] ?? null;
         unset($data['available']);
@@ -59,7 +62,11 @@ class InvestorController extends Controller
      */
     public function show(int $id)
     {
-        $investor = Investor::findOrFail($id);
+        $investor = Investor::where('id', $id)->where('user_id', auth()->user()->id)->first();
+
+        if (is_null($investor)) {
+            return response()->json(['error' => 'Not found'], 404);
+        }
 
         return response()->json($investor, 200);
     }

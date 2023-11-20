@@ -11,19 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('investors', function (Blueprint $table) {
+        Schema::create('debtors', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('available', 10, 2)->nullable();
-            $table->decimal('engaged', 10, 2)->nullable();
-            $table->decimal('profit', 10, 2)->nullable();
+            $table->string('name', 100);
+            $table->string('address', 150);
+            $table->integer('max_active_loans')->default(1);
+
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->boolean('status')->default(true);
+            $table->timestamps();
 
             $table->unique(['name', 'user_id']);
-
-            $table->timestamps();
         });
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('investors');
+        Schema::dropIfExists('debtors');
     }
 };

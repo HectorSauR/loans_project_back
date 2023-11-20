@@ -6,9 +6,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Investor>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Debtor>
  */
-class InvestorFactory extends Factory
+class DebtorFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,9 +19,7 @@ class InvestorFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'available' => $this->faker->randomFloat(2, 1000, 5000),
-            'engaged' => $this->faker->randomFloat(2, 1000, 5000),
-            'profit' => $this->faker->randomFloat(2, 0, 1000),
+            'address' => $this->faker->address,
             'user_id' => 1,
         ];
     }
