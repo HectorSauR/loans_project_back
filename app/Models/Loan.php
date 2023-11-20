@@ -85,19 +85,19 @@ class Loan extends Model
 
         $investorBalance = $this->investor->getBalance();
         $newTotal = (float)$data["total"];
-        $difference = abs($this->total -= $newTotal);
+        $difference = abs($this->total - $newTotal);
 
         if ($this->total > $newTotal) {
             $this->investor->available += $difference;
-        } else {
+        } else if ($this->total != $newTotal){
             if ($difference > $investorBalance) {
                 throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.");
             }
 
             $this->investor->available -= $difference;
-            $this->investor->save();
         }
 
+        $this->investor->save();
         parent::update($data, $options);
     }
 
