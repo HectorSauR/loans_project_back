@@ -5,6 +5,7 @@ use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\InvestController;
 use App\Http\Controllers\V1\InvestorController;
 use App\Http\Controllers\V1\LoanController;
+use App\Http\Controllers\V1\PaymentController;
 use App\Http\Controllers\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1'], funct
         Route::apiResource('debtor', DebtorController::class);
         Route::post('debtor/{id}/addLoan', [DebtorController::class, 'addLoan'])->name('debtor.addLoan');
         Route::apiResource('loan', LoanController::class);
+
+        Route::apiResource('payment', PaymentController::class);
     });
 });
 

@@ -57,4 +57,9 @@ class User extends Authenticatable
         return $this->hasManyThrough(Loan::class, Debtor::class);
     }
 
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Debtor::class);
+    }
+
 }
