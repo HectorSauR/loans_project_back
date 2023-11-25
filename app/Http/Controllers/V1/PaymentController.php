@@ -23,7 +23,11 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request)
     {
-        
+        $data = $request->all();
+
+        $payment = Payment::createNewPayment($data);
+
+        return $payment;
     }
 
     /**

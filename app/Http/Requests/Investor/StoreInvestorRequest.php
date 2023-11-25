@@ -32,11 +32,4 @@ class StoreInvestorRequest extends FormRequest
             'available' => ['sometimes', new DecimalRule(10, 2)]
         ];
     }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'user_id' => $this->userId,
-        ]);
-    }
 }

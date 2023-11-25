@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Payment;
 
+use App\Rules\DecimalRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StorePaymentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,15 @@ class StorePaymentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+
         return [
-            //
+            "total" => [new DecimalRule(10, 2), 'required'],
+            'kind' => ['sometimes', Rule::in(['cash', 'card'])],
+            'debtor_id' => [
+                'required',
+                Rule::exists('debtors', 'id')->where('user_id', $user->id)
+            ]
         ];
     }
 }

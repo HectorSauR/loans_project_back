@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->decimal('total', 10, 2);
-            $table->decimal('remaining', 10, 2)->nullable();
+            $table->decimal('remaining', 10, 2);
             $table->decimal('interest', 10, 2)->default(10.00);
             $table->decimal('interest_generated', 10, 2)->nullable();
             $table->enum('deadline', ['week', 'month'])->default('month');

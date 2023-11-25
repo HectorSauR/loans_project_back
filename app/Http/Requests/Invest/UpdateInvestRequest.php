@@ -23,11 +23,17 @@ class UpdateInvestRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+
         return [
             'total' => ['sometimes', new DecimalRule(10, 2)],
             'details' => ['sometimes', 'string'],
             'kind' => ['sometimes', Rule::in(['in', 'out'])],
-            'investorId' => ['sometimes', 'integer', 'exists:investors,id']
+            'investor_id' => [
+                'required',
+                'integer',
+                Rule::exists('investors', 'id')->where('user_id', $user->id)
+            ]
         ];
     }
 
