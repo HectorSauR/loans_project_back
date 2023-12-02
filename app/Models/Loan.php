@@ -16,6 +16,7 @@ class Loan extends Model
 
     protected $fillable = [
         "total",
+        "remaining",
         "interest",
         "deadline",
         "guarantee",
@@ -65,6 +66,8 @@ class Loan extends Model
         }
 
         $investor->reduceBalance($data["total"]);
+        
+        $data["remaining"] = $data["total"];
 
         $loan = Loan::create($data);
 

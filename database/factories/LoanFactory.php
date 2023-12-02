@@ -23,7 +23,7 @@ class LoanFactory extends Factory
             'interest_generated' => $this->faker->randomFloat(2, 0, 100),
             'deadline' => $this->faker->randomElement(['week', 'month']),
             'estimated_end_date' => $this->faker->dateTimeBetween('now', '+1 year'),
-            'ended_date' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'ended_date' => $this->faker->optional()->dateTimeBetween('now', '+1 year'),
             'guarantee' => $this->faker->text,
             'kind' => $this->faker->randomElement(['cash', 'card']),
             'investor_id' => function () {
@@ -32,6 +32,7 @@ class LoanFactory extends Factory
             'debtor_id' => function () {
                 return \App\Models\Debtor::inRandomOrder()->first()->id;
             },
+            'created_at' => $this->faker->dateTimeBetween('now', '+1 year')
         ];
     }
 }

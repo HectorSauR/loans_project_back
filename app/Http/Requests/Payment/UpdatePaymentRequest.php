@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Investor;
+namespace App\Http\Requests\Payment;
 
-use App\Rules\DecimalRule;
-use App\Rules\UniqueTogether;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreInvestorRequest extends FormRequest
+class UpdatePaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -24,12 +22,7 @@ class StoreInvestorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', new UniqueTogether(
-                'investors',
-                ['name', 'user_id'],
-                'El nombre seleccionado ya fue tomado'
-            )],
-            'available' => ['sometimes', new DecimalRule(10, 2)]
+            //
         ];
     }
 }

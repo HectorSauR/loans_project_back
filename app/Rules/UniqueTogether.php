@@ -25,7 +25,7 @@ class UniqueTogether implements ValidationRule
     }
 
     protected $columns_json = [
-        'ejemplo_id' => 'ejemploId',
+        'ejemplo_id' => 'ejemploId'
     ];
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
@@ -39,6 +39,10 @@ class UniqueTogether implements ValidationRule
                     $value = request($column);
                 }
 
+                if ($column == 'user_id') {
+                    $value = auth()->user()->id;
+                }
+
                 $query->where($column, $value);
             }
         });
@@ -47,7 +51,7 @@ class UniqueTogether implements ValidationRule
             $query->where($this->excludeName, '!=', $this->excludeId);
         }
 
-        if(!($query->count() != 0)){
+        if (!($query->count() == 0)) {
             $fail($this->message);
         }
     }

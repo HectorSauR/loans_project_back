@@ -36,13 +36,14 @@ class Debtor extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function activeLoans(): array
+    public function activeLoans()
     {
         $loans = $this->loans()
             ->whereNull("ended_date")
+            ->orderBy('created_at')
             ->get();
 
-        return array($loans);
+        return $loans;
     }
 
     public static function getForUser(User $user)
