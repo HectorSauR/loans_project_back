@@ -5,7 +5,9 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Loan\StoreLoanRequest;
 use App\Http\Requests\Loan\UpdateLoanRequest;
+use App\Http\Resources\V1\Loan\LoanCollection;
 use App\Models\Loan;
+use Exception;
 
 class LoanController extends Controller
 {
@@ -15,7 +17,8 @@ class LoanController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return response()->json($user->loans, 200);
+
+        return response()->json(new LoanCollection($user->loans), 200);
     }
 
     /**
@@ -25,7 +28,16 @@ class LoanController extends Controller
     {
         $data = $request->all();
 
-        $loan = Loan::createNewLoan($data);
+        try {
+            $loan = Loan::createNewLoan($data);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         return response()->json($loan, 200);
     }

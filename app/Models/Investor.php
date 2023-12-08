@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\UserScoped;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -75,17 +76,26 @@ class Investor extends Model
     public function delete()
     {
         if ($this->is_active()) {
-            throw new \Exception("No se puede eliminar un inversor que tiene préstamos activos");
+            throw new Exception("No se puede eliminar un inversor que tiene préstamos activos");
         }
 
         $balance = $this->getBalance();
 
-        Invest::createNewInvest([
-            'total' => $balance,
-            'investor_id' => $this->id,
-            'kind' => 'out',
-            'detail' => "Invesor dado de baja"
-        ]);
+        try {
+            Invest::createNewInvest([
+                'total' => $balance,
+                'investor_id' => $this->id,
+                'kind' => 'out',
+                'detail' => "Invesor dado de baja"
+            ]);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         $this->status = 0;
         $this->save();

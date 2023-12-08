@@ -80,7 +80,7 @@ class Invest extends Model
 
             if ($attributes['kind'] == "out") {
                 if ($sum > $investorAvailable) {
-                    throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.");
+                    throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.", 400);
                 }
 
                 $this->investor->available -= $sum;
@@ -92,7 +92,7 @@ class Invest extends Model
                 $this->investor->available += $difference;
             } else {
                 if ($difference > $investorAvailable) {
-                    throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.");
+                    throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.", 400);
                 }
                 $this->investor->available -= $difference;
             }

@@ -50,9 +50,7 @@ class Loan extends Model
         $active_loans = $debtor->loans->whereNull("ended_date")->count();
 
         if ($active_loans >= $max_loans) {
-            throw new \Exception(
-                "Préstamos activos superados."
-            );
+            throw new \Exception("Préstamos activos superados.", 400);
         }
 
         $investor = Investor::find($data["investor_id"]);
@@ -61,12 +59,13 @@ class Loan extends Model
 
         if (!($investorBalance >= $data["total"])) {
             throw new InsuficientBalanceException(
-                "Insuficiente dinero disponible del inversor."
+                "Insuficiente dinero disponible del inversor.",
+                400
             );
         }
 
         $investor->reduceBalance($data["total"]);
-        
+
         $data["remaining"] = $data["total"];
 
         $loan = Loan::create($data);
@@ -92,9 +91,9 @@ class Loan extends Model
 
         if ($this->total > $newTotal) {
             $this->investor->available += $difference;
-        } else if ($this->total != $newTotal){
+        } else if ($this->total != $newTotal) {
             if ($difference > $investorBalance) {
-                throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.");
+                throw new InsuficientBalanceException("Saldo insuficiente para efectuar la modificación.", 400);
             }
 
             $this->investor->available -= $difference;

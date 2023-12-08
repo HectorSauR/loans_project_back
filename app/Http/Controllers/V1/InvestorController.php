@@ -8,6 +8,7 @@ use App\Http\Requests\Investor\StoreInvestorRequest;
 use App\Http\Requests\Investor\UpdateInvestorRequest;
 use App\Models\Invest;
 use App\Models\Investor;
+use Exception;
 
 class InvestorController extends Controller
 {
@@ -47,11 +48,20 @@ class InvestorController extends Controller
         $investor = Investor::create($data);
 
         if (!is_null($available)) {
-            Invest::createNewInvest([
-                'total' => $available,
-                'investor_id' => $investor->id,
-                'detail' => "Saldo inicial"
-            ]);
+            try {
+                Invest::createNewInvest([
+                    'total' => $available,
+                    'investor_id' => $investor->id,
+                    'detail' => "Saldo inicial"
+                ]);
+            } catch (Exception $e) {
+                return response()->json(
+                    [
+                        "detail" => $e->getMessage()
+                    ],
+                    $e->getCode()
+                );
+            }
         }
 
         return response()->json($investor, 200);
@@ -123,7 +133,7 @@ class InvestorController extends Controller
         $movement = $investor->invests->where('id', $movementId)->first();
 
         if (!$movement) {
-            throw new \Exception("No hay relación entre el movimiento y el inversor");
+            return response()->json("No hay relación entre el movimiento y el inversor", 404);
         }
 
         $movement->update($data);

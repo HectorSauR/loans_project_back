@@ -46,7 +46,7 @@ class DebtorController extends Controller
                 $debtor->delete();
             }
 
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['detail' => $e->getMessage()], $e->getCode());
         }
 
         $debtor->loan = $loan;
@@ -90,7 +90,16 @@ class DebtorController extends Controller
         $data = $request->all();
 
         $data["debtor_id"] = $id;
-        $loan = Loan::createNewLoan($data);
+        try {
+            $loan = Loan::createNewLoan($data);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         return response()->json($loan, 200);
     }
