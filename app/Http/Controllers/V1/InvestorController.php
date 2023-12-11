@@ -119,7 +119,16 @@ class InvestorController extends Controller
 
         $data["investor_id"] = $id;
 
-        $invest = Invest::createNewInvest($data);
+        try {
+            $invest = Invest::createNewInvest($data);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         return response()->json($invest, 200);
     }
@@ -133,10 +142,21 @@ class InvestorController extends Controller
         $movement = $investor->invests->where('id', $movementId)->first();
 
         if (!$movement) {
-            return response()->json("No hay relación entre el movimiento y el inversor", 404);
+            return response()->json([
+                "detail" => "No hay relación entre el movimiento y el inversor"
+            ], 404);
         }
 
-        $movement->update($data);
+        try {
+            $movement->update($data);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         return response()->json($movement, 200);
     }

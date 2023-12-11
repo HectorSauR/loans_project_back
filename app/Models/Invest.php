@@ -19,7 +19,8 @@ class Invest extends Model
     protected $fillable = [
         "total",
         "investor_id",
-        "kind"
+        "kind",
+        "details"
     ];
 
     public function investor(): BelongsTo
@@ -36,7 +37,7 @@ class Invest extends Model
             $data["kind"] ?? "in" == "out"
             and $investor->getBalance() < $data["total"]
         ) {
-            throw new \Exception("No se retirar más dinero del que se tiene disponible");
+            throw new \Exception("No se retirar más dinero del que se tiene disponible", 400);
         }
 
         $invest = Invest::create($data);
@@ -73,6 +74,8 @@ class Invest extends Model
         $difference = abs($totalSaved - $totalIncoming);
         $investorAvailable = $this->investor->available;
 
+        $this->kind = isset($attributes["kind"]) ? $attributes["kind"] : $this->kind;
+        $this->details = isset($attributes["details"]) ? $attributes["details"] : $this->details;
         $this->total = $totalIncoming;
 
         if ($isDifferentKind == 0) {
@@ -87,6 +90,7 @@ class Invest extends Model
             } else {
                 $this->investor->available += $sum;
             }
+
         } else {
             if ($totalSaved < $totalIncoming) {
                 $this->investor->available += $difference;
