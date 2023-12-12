@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 class Payment extends Model
 {
@@ -28,6 +30,10 @@ class Payment extends Model
         $loans = $payment->debtor->activeLoans();
         $totalPayment = $payment->total;
 
+        if (count($loans) < 1) {
+            throw new \Exception("No hay pagos pendientes", 400);
+        }
+
         foreach ($loans as $loan) {
             //restar el total del pago al prestamo más viejo.
             $remaining = $loan->remaining;
@@ -41,6 +47,7 @@ class Payment extends Model
                 $totalPayment = 0;
             } else {
                 $loan->remaining = 0;
+                $loan->ended_date = Carbon::now();
                 $loan->save();
                 $paid = $remaining;
                 $totalPayment = $diff;
@@ -58,5 +65,16 @@ class Payment extends Model
         }
 
         return $payment;
+    }
+
+    public function delete()
+    {
+        $payments = LoanPayments::where('payment_id', $this->id)->get();
+
+        foreach ($payments as $payment) {
+            $payment->delete();
+        }
+
+        parent::delete();
     }
 }

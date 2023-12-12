@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Http\Requests\Payment\UpdatePaymentRequest;
 use App\Models\Payment;
+use Exception;
 
 class PaymentController extends Controller
 {
@@ -24,10 +25,18 @@ class PaymentController extends Controller
     public function store(StorePaymentRequest $request)
     {
         $data = $request->all();
+        try {
+            $payment = Payment::createNewPayment($data);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
-        $payment = Payment::createNewPayment($data);
-
-        return $payment;
+        return response()->json($payment, 200);
     }
 
     /**
@@ -49,8 +58,14 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Payment $payment)
+    public function destroy(int $id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+
+        $payment->delete();
+
+        return response()->json([
+            "message" => "pago eliminado con exitos!"
+        ], 200);
     }
 }
