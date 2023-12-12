@@ -11,6 +11,7 @@ use App\Models\Investor;
 use App\Models\Loan;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DebtorController extends Controller
 {
@@ -77,14 +78,6 @@ class DebtorController extends Controller
         return response()->json($debtor, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Debtor $debtor)
-    {
-        //
-    }
-
     public function addLoan(StoreLoanRequest $request, int $id)
     {
         $data = $request->all();
@@ -102,5 +95,20 @@ class DebtorController extends Controller
         }
 
         return response()->json($loan, 200);
+    }
+
+    public function getLoans(Request $request, int $id)
+    {
+        $active = $request->query('active') ?? "";
+
+        $debtor = Debtor::findOrFail($id);
+
+        if ($active) {
+            $debtor->activeLoans = $debtor->activeLoans();
+        } else {
+            $debtor->loans;
+        }
+
+        return response()->json($debtor, 200);
     }
 }
