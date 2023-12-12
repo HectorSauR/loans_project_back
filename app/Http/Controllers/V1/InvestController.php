@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Invest\StoreInvestRequest;
 use App\Http\Requests\Invest\UpdateInvestRequest;
+use App\Http\Resources\V1\Invest\InvestCollection;
+use App\Http\Resources\V1\Invest\InvestResource;
 use App\Models\Invest;
 
 class InvestController extends Controller
@@ -15,7 +17,7 @@ class InvestController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return response()->json($user->invests, 200);
+        return response()->json(new InvestCollection($user->invests), 200);
     }
 
     /**

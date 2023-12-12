@@ -26,24 +26,20 @@ class Debtor extends Model
         "user_id"
     ];
 
-    public function loans(): HasMany
+    public function loans(bool $onlyActive = false): HasMany
     {
-        return $this->hasMany(Loan::class);
+        $loans = $this->hasMany(Loan::class);
+        
+        if ($onlyActive) {
+            return $loans->whereNull('ended_date')->orderBy('created_at');
+        }
+
+        return $loans;
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function activeLoans()
-    {
-        $loans = $this->loans()
-            ->whereNull("ended_date")
-            ->orderBy('created_at')
-            ->get();
-
-        return $loans;
     }
 
     public static function getForUser(User $user)

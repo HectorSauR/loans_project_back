@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Debtor\StoreDebtorRequest;
 use App\Http\Requests\Debtor\UpdateDebtorRequest;
 use App\Http\Requests\Loan\StoreLoanRequest;
+use App\Http\Resources\V1\Debtor\DebtorCollection;
+use App\Http\Resources\V1\Debtor\DebtorResource;
 use App\Models\Debtor;
 use App\Models\Investor;
 use App\Models\Loan;
@@ -99,16 +101,8 @@ class DebtorController extends Controller
 
     public function getLoans(Request $request, int $id)
     {
-        $active = $request->query('active') ?? "";
-
         $debtor = Debtor::findOrFail($id);
 
-        if ($active) {
-            $debtor->activeLoans = $debtor->activeLoans();
-        } else {
-            $debtor->loans;
-        }
-
-        return response()->json($debtor, 200);
+        return response()->json(new DebtorResource($debtor), 200);
     }
 }

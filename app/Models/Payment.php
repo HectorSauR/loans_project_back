@@ -27,7 +27,7 @@ class Payment extends Model
     {
         $payment = Payment::create($data);
 
-        $loans = $payment->debtor->activeLoans();
+        $loans = $payment->debtor->loans(true)->get();
         $totalPayment = $payment->total;
 
         if (count($loans) < 1) {
