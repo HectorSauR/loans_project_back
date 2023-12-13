@@ -25,14 +25,16 @@ class Payment extends Model
 
     static function createNewPayment($data)
     {
-        $payment = Payment::create($data);
-
-        $loans = $payment->debtor->loans(true)->get();
-        $totalPayment = $payment->total;
+        $debtor = Debtor::find($data['debtor_id']);
+        $loans = $debtor->loans(true)->get();
 
         if (count($loans) < 1) {
             throw new \Exception("No hay pagos pendientes", 400);
         }
+
+        $payment = Payment::create($data);
+
+        $totalPayment = $payment->total;
 
         foreach ($loans as $loan) {
             //restar el total del pago al prestamo más viejo.
