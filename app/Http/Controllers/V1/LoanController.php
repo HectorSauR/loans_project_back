@@ -74,6 +74,21 @@ class LoanController extends Controller
         return response()->json($loan, 200);
     }
 
+    public function finishLoan(int $id)
+    {
+        $user = auth()->user();
+        $loan = $user->loans->where('id', $id)->first();
+
+        if (!$loan) {
+            return response()->json(["error" => "Not Found"], 404);
+        }
+
+        $loan->finish();
+
+        return response()->json([
+            "detail" => "Prestamo finalizado con éxito!"
+        ], 200);
+    }
     /**
      * Remove the specified resource from storage.
      */

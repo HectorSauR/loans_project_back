@@ -41,6 +41,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1'], funct
         Route::apiResource('debtor', DebtorController::class);
         Route::get('debtor/{id}/loans', [DebtorController::class, 'getLoans'])->name('debtor.getLoans');
         Route::post('debtor/{id}/addLoan', [DebtorController::class, 'addLoan'])->name('debtor.addLoan');
+
+        Route::post('loan/{id}/finish', [LoanController::class, 'finishLoan'])->name('loan.finish');
         Route::apiResource('loan', LoanController::class);
 
         Route::apiResource('payment', PaymentController::class);

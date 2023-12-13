@@ -108,4 +108,10 @@ class Loan extends Model
         $oneDayAgo = now()->subDay();
         return $this->created_at <= $oneDayAgo;
     }
+
+    public function finish()
+    {
+        $this->ended_date = now();
+        $this->save();
+    }
 }
