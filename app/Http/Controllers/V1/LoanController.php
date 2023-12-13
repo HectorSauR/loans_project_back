@@ -69,7 +69,16 @@ class LoanController extends Controller
             return response()->json(["error" => "Not Found"], 404);
         }
 
-        $loan->update($request->all());
+        try {
+            $loan->update($request->all());
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    "detail" => $e->getMessage()
+                ],
+                $e->getCode()
+            );
+        }
 
         return response()->json($loan, 200);
     }

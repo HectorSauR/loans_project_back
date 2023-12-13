@@ -30,15 +30,7 @@ class UpdateLoanRequest extends FormRequest
             'interest' => ['sometimes', new DecimalRule(10, 2)],
             'deadline' => ['sometimes', Rule::in(['week', 'month'])],
             'guarantee' => ['sometimes'],
-            'kind' => ['sometimes', Rule::in(['cash', 'card'])],
-            'investor_id' => [
-                'sometimes',
-                Rule::exists('investors', 'id')->where('user_id', $user->id)
-            ],
-            'debtor_id' => [
-                'sometimes',
-                Rule::exists('debtors', 'id')->where('user_id', $user->id)
-            ]
+            'kind' => ['sometimes', Rule::in(['cash', 'card'])]
         ];
     }
 }
