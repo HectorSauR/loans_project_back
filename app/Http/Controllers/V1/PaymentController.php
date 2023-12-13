@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Http\Requests\Payment\UpdatePaymentRequest;
+use App\Http\Resources\V1\Payment\PaymentCollection;
+use App\Http\Resources\V1\Payment\PaymentResource;
 use App\Models\Payment;
 use Exception;
 
@@ -16,7 +18,7 @@ class PaymentController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return response()->json($user->payments, 200);
+        return response()->json(new PaymentCollection($user->payments), 200);
     }
 
     /**
@@ -36,7 +38,7 @@ class PaymentController extends Controller
             );
         }
 
-        return response()->json($payment, 200);
+        return response()->json(new PaymentResource($payment), 200);
     }
 
     /**

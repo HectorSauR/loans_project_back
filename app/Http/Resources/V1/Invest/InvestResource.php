@@ -17,10 +17,10 @@ class InvestResource extends JsonResource
         return [
             'id' => $this->id,
             'total' => $this->total,
-            'investor_id' => $this->investor,
             'kind' => $this->kind,
             'details' => $this->details,
             'created_at' => $this->created_at,
+            'investor' => $this->investor
         ];
     }
 }
