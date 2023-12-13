@@ -47,8 +47,7 @@ class Payment extends Model
                 $totalPayment = 0;
             } else {
                 $loan->remaining = 0;
-                $loan->ended_date = Carbon::now();
-                $loan->save();
+                $loan->finish();
                 $paid = $remaining;
                 $totalPayment = $diff;
             }

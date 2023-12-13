@@ -4,10 +4,10 @@ namespace App\Models;
 
 use App\Exceptions\InsuficientBalanceException;
 use App\Exceptions\UpdateNotAllowedException;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 
 class Loan extends Model
@@ -34,6 +34,11 @@ class Loan extends Model
     public function investor(): BelongsTo
     {
         return $this->belongsTo(Investor::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(LoanPayments::class);
     }
 
     public function isActive(): bool
@@ -111,7 +116,30 @@ class Loan extends Model
 
     public function finish()
     {
+        if(!is_null($this->ended_date)){
+            return;
+        }
+
         $this->ended_date = now();
         $this->save();
+        $investor = $this->investor;
+
+        //lost?
+        if ($this->remaining != 0) {
+            $totalRecovered = $this->payments()->sum('total');
+
+            if ($totalRecovered < $this->total) {
+                $investor->available += $totalRecovered;
+                return;
+            }
+        }
+
+        //win!
+        $win = abs($this->remaining - $this->interest_generated);
+
+        //retunr investment to investor n profit
+        $investor->profit += $win;
+        $investor->available += $this->total;
+        $investor->save();
     }
 }
